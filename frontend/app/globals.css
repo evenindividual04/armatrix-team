@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #080A08;
+  --card: #111311;
+  --card-border: #1C1F1C;
+  --card-border-hover: #FF9500;
+  --accent: #FF9500;
+  --accent-dim: rgba(255, 149, 0, 0.15);
+  --text-primary: #E8EBE8;
+  --text-secondary: #7A8078;
+  --text-mono: #FF9500;
+
+  --font-display: var(--font-barlow-condensed), 'Barlow Condensed', system-ui, sans-serif;
+  --font-body: var(--font-barlow), 'Barlow', system-ui, sans-serif;
+  --font-mono: var(--font-mono-var, var(--font-mono)), 'JetBrains Mono', monospace;
+
+  /* Legacy aliases for components not being redesigned */
+  --font-space-grotesk: var(--font-barlow-condensed), 'Barlow Condensed', system-ui, sans-serif;
+  --font-inter: var(--font-barlow), 'Barlow', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+/* Blueprint grid background */
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Scanline overlay for photos */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 3px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Photo grayscale → color on hover */
+.photo-grayscale {
+  filter: grayscale(1) brightness(0.9);
+  transition: filter 0.25s ease;
+}
+
+.photo-grayscale:hover,
+.card-hover-group:hover .photo-grayscale {
+  filter: grayscale(0) brightness(1);
+}
+
+/* Card left accent border on hover */
+.card-accent {
+  border-left: 2px solid transparent;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card-accent:hover {
+  border-left-color: var(--accent);
+  background: #151715 !important;
+  box-shadow: 0 0 40px rgba(255, 149, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Responsive bento grid */
+@media (max-width: 767px) {
+  .grid-mobile {
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto !important;
+  }
+  .grid-mobile > * {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .grid-mobile {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Marquee ticker */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.marquee-content {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.14em;
+  color: #4A4F4A;
+  white-space: nowrap;
+  padding-right: 0;
+}
+
+/* Arm schematic — hidden on mobile */
+.hero-schematic {
+  display: none;
+  user-select: none;
+}
+@media (min-width: 900px) {
+  .hero-schematic {
+    display: block;
+    width: 240px;
+    flex-shrink: 0;
+    opacity: 0.9;
+  }
+}
+
+/* WideCard responsive layout */
+.wide-card-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.wide-card-photo {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #0D0F0D;
+}
+@media (min-width: 640px) {
+  .wide-card-inner {
+    flex-direction: row;
+  }
+  .wide-card-photo {
+    width: 220px;
+    height: auto;
+  }
+}
+
+/* Admin form inputs */
+.admin-input {
+  background: #0D0F0D;
+  border: 1px solid #1C1F1C;
+  color: #E8EBE8;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+  appearance: none;
+}
+.admin-input:focus {
+  border-color: rgba(255, 149, 0, 0.5);
+}
+.admin-input::placeholder {
+  color: #3A3F3A;
+}
+
+/* Modal photo responsive sizing */
+.modal-photo-wrap {
+  width: 100%;
+  height: 240px;
+  position: relative;
+}
+@media (min-width: 640px) {
+  .modal-photo-wrap {
+    width: 220px;
+    height: 100%;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #080A08;
+}
+::-webkit-scrollbar-thumb {
+  background: #1C1F1C;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 149, 0, 0.4);
+}

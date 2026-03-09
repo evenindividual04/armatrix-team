@@ -1,0 +1,120 @@
+from sqlalchemy.orm import Session
+from .models import TeamMember
+
+SEED_MEMBERS = [
+    {
+        "name": "Vishrant Dave",
+        "role": "Co-Founder & CEO",
+        "department": "Leadership",
+        "bio": "Vishrant leads Armatrix's vision to make industrial inspection safer through robotics. With a background in mechanical engineering from IIT Bombay and prior experience at Boston Dynamics, he combines deep hardware expertise with entrepreneurial drive to commercialize snake-like robotic arms for hazardous environments.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Vishrant&backgroundColor=b6e3f4",
+        "linkedin_url": "https://linkedin.com/in/vishrant-dave",
+        "twitter_url": "https://twitter.com/vishrantdave",
+        "email": "vishrant@armatrix.in",
+        "card_size": "featured",
+        "order": 1,
+    },
+    {
+        "name": "Ayush Ranjan",
+        "role": "Co-Founder & CTO",
+        "department": "Leadership",
+        "bio": "Ayush architects the AI and control systems powering Armatrix's robotic arms. Formerly a robotics researcher at CMU's Robotics Institute, he specializes in motion planning for hyper-redundant manipulators and real-time embedded systems. Holds 3 patents in robotic kinematics.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ayush&backgroundColor=c0aede",
+        "linkedin_url": "https://linkedin.com/in/ayush-ranjan",
+        "twitter_url": "https://twitter.com/ayushranjan",
+        "email": "ayush@armatrix.in",
+        "card_size": "featured",
+        "order": 2,
+    },
+    {
+        "name": "Prateesh Awasthi",
+        "role": "Co-Founder & COO",
+        "department": "Leadership",
+        "bio": "Prateesh drives operations and business development at Armatrix. With an MBA from IIM Ahmedabad and a decade in industrial automation sales, he bridges the gap between cutting-edge robotics and enterprise clients in aviation, oil & gas, and defense sectors across India and Southeast Asia.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Prateesh&backgroundColor=ffd5dc",
+        "linkedin_url": "https://linkedin.com/in/prateesh-awasthi",
+        "email": "prateesh@armatrix.in",
+        "card_size": "wide",
+        "order": 3,
+    },
+    {
+        "name": "Meera Krishnaswamy",
+        "role": "Lead Robotics Engineer",
+        "department": "Engineering",
+        "bio": "Meera leads mechanical design for Armatrix's snake-arm modules. She holds an MS in Robotics from Georgia Tech and previously built inspection drones at ISRO. Her expertise in compliant mechanisms and miniaturized actuators is central to the arm's ability to navigate tight industrial spaces.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Meera&backgroundColor=b6e3f4",
+        "linkedin_url": "https://linkedin.com/in/meera-krishnaswamy",
+        "card_size": "wide",
+        "order": 4,
+    },
+    {
+        "name": "Arjun Mehta",
+        "role": "Embedded Systems Engineer",
+        "department": "Engineering",
+        "bio": "Arjun designs the real-time firmware and hardware interfaces for Armatrix's robotic arms. Expert in ROS2, FPGA-based motor control, and low-latency sensor fusion. Previously at Tata Elxsi developing automotive ADAS systems. He's passionate about deterministic systems in safety-critical environments.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Arjun&backgroundColor=d1f0e0",
+        "linkedin_url": "https://linkedin.com/in/arjun-mehta",
+        "email": "arjun@armatrix.in",
+        "card_size": "standard",
+        "order": 5,
+    },
+    {
+        "name": "Divya Nair",
+        "role": "AI & Computer Vision Engineer",
+        "department": "Engineering",
+        "bio": "Divya develops the perception and navigation stack for autonomous inspection. She specializes in 3D reconstruction from endoscopic cameras, SLAM in GPS-denied environments, and anomaly detection for structural defects. PhD dropout from IISc, where she published 4 papers on visual SLAM for confined spaces.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Divya&backgroundColor=ffd5dc",
+        "linkedin_url": "https://linkedin.com/in/divya-nair",
+        "card_size": "standard",
+        "order": 6,
+    },
+    {
+        "name": "Rishi Kapoor",
+        "role": "Software Engineer",
+        "department": "Engineering",
+        "bio": "Rishi builds the cloud platform and data pipelines for Armatrix's inspection analytics. He designs REST APIs, real-time telemetry dashboards, and the web-based robot control interface. Previously a backend engineer at Swiggy. Passionate about developer tooling and making robotics accessible through great software.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rishi&backgroundColor=b6e3f4",
+        "linkedin_url": "https://linkedin.com/in/rishi-kapoor",
+        "card_size": "standard",
+        "order": 7,
+    },
+    {
+        "name": "Saanvi Patel",
+        "role": "Lead Product Designer",
+        "department": "Design",
+        "bio": "Saanvi shapes how operators experience Armatrix's technology — from the robot control interface to the reporting dashboard. With 6 years of UX experience at hardware startups, she bridges complex robotics workflows and human-centered design. Advocate for accessibility in industrial software.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Saanvi&backgroundColor=ffd5dc",
+        "linkedin_url": "https://linkedin.com/in/saanvi-patel",
+        "card_size": "standard",
+        "order": 8,
+    },
+    {
+        "name": "Karan Oberoi",
+        "role": "Brand & Motion Designer",
+        "department": "Design",
+        "bio": "Karan crafts Armatrix's visual identity — from pitch deck animations to product renders and the company website. Trained at NID Ahmedabad, he brings a rigorous design sensibility to deep-tech aesthetics. His motion graphics have been featured in TechCrunch and The Ken's startup coverage.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Karan&backgroundColor=c0aede",
+        "linkedin_url": "https://linkedin.com/in/karan-oberoi",
+        "card_size": "standard",
+        "order": 9,
+    },
+    {
+        "name": "Ananya Singh",
+        "role": "Head of Operations",
+        "department": "Operations",
+        "bio": "Ananya ensures Armatrix runs like the precision machines it builds. She manages supply chain, manufacturing partners, and field deployment logistics. Previously at Mahindra's industrial division coordinating complex equipment installations. Holds a BE in Industrial Engineering from NIT Trichy.",
+        "photo_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ananya&backgroundColor=d1f0e0",
+        "linkedin_url": "https://linkedin.com/in/ananya-singh",
+        "email": "ananya@armatrix.in",
+        "card_size": "standard",
+        "order": 10,
+    },
+]
+
+def seed_database(db: Session) -> None:
+    count = db.query(TeamMember).count()
+    if count == 0:
+        for member_data in SEED_MEMBERS:
+            member = TeamMember(**member_data)
+            db.add(member)
+        db.commit()
