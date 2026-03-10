@@ -120,6 +120,8 @@ export default function TeamCard({ member, onClick, index }: Props) {
             ) : (
               <AvatarFallback name={member.name} className="w-full h-full" />
             )}
+            {/* Dark overlay to blend light avatar backgrounds into the dark card */}
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.28)', zIndex: 1, pointerEvents: 'none' }} />
           </div>
 
           {/* Info */}

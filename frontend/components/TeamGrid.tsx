@@ -63,11 +63,11 @@ export default function TeamGrid({
           </motion.div>
         ) : (
           <motion.div
-            key={department}
+            key="__grid"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
@@ -77,36 +77,47 @@ export default function TeamGrid({
             }}
             className="grid-mobile"
           >
-            {filtered.map((member, i) => {
-              if (member.card_size === 'featured') {
+            <AnimatePresence mode="popLayout">
+              {filtered.map((member, i) => {
+                const isWide = member.card_size === 'wide';
+                const isFeatured = member.card_size === 'featured';
                 return (
-                  <FeaturedCard
+                  <motion.div
                     key={member.id}
-                    member={member}
-                    onClick={() => onMemberClick(member)}
-                    index={i}
-                  />
+                    layout
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={{ duration: 0.22, ease: 'easeOut' }}
+                    style={{
+                      gridColumn: isWide || isFeatured ? 'span 2' : undefined,
+                      gridRow: isFeatured ? 'span 2' : undefined,
+                      height: '100%',
+                    }}
+                  >
+                    {isFeatured ? (
+                      <FeaturedCard
+                        member={member}
+                        onClick={() => onMemberClick(member)}
+                        index={i}
+                      />
+                    ) : isWide ? (
+                      <WideCard
+                        member={member}
+                        onClick={() => onMemberClick(member)}
+                        index={i}
+                      />
+                    ) : (
+                      <TeamCard
+                        member={member}
+                        onClick={() => onMemberClick(member)}
+                        index={i}
+                      />
+                    )}
+                  </motion.div>
                 );
-              }
-              if (member.card_size === 'wide') {
-                return (
-                  <WideCard
-                    key={member.id}
-                    member={member}
-                    onClick={() => onMemberClick(member)}
-                    index={i}
-                  />
-                );
-              }
-              return (
-                <TeamCard
-                  key={member.id}
-                  member={member}
-                  onClick={() => onMemberClick(member)}
-                  index={i}
-                />
-              );
-            })}
+              })}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>

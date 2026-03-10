@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import Image from 'next/image';
 import { Linkedin, Twitter, Mail } from 'lucide-react';
 import { useState } from 'react';
+import { useTextScramble } from '@/hooks/useTextScramble';
 import type { TeamMember } from '@/types';
 import SpotlightCard from './SpotlightCard';
 import AvatarFallback from './AvatarFallback';
@@ -28,6 +29,7 @@ const CARD_HOVER = {
 
 export default function FeaturedCard({ member, onClick, index }: Props) {
   const [imgError, setImgError] = useState(false);
+  const { displayText, scramble, reset } = useTextScramble(member.name);
 
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
@@ -40,11 +42,6 @@ export default function FeaturedCard({ member, onClick, index }: Props) {
     mouseY.set((e.clientY - rect.top) / rect.height);
   };
 
-  const handleMouseLeave = () => {
-    mouseX.set(0.5);
-    mouseY.set(0.5);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -52,15 +49,15 @@ export default function FeaturedCard({ member, onClick, index }: Props) {
       viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.6, delay: index * 0.06 }}
       style={{
-        gridColumn: 'span 2',
-        gridRow: 'span 2',
+        height: '100%',
         rotateX,
         rotateY,
         transformStyle: 'preserve-3d',
         transformPerspective: 800,
       }}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={scramble}
+      onMouseLeave={() => { mouseX.set(0.5); mouseY.set(0.5); reset(); }}
     >
       <SpotlightCard
         className="card-hover-group h-full cursor-pointer"
@@ -113,13 +110,23 @@ export default function FeaturedCard({ member, onClick, index }: Props) {
             ) : (
               <AvatarFallback name={member.name} className="w-full h-full" />
             )}
-            {/* Gradient overlay */}
+            {/* Gradient overlay + base dark tint to blend avatar light backgrounds */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(0,0,0,0.22)',
+                zIndex: 1,
+                pointerEvents: 'none',
+              }}
+            />
             <div
               style={{
                 position: 'absolute',
                 inset: 0,
                 background: 'linear-gradient(to top, #111311 0%, rgba(17,19,17,0.3) 40%, transparent 100%)',
-                zIndex: 1,
+                zIndex: 2,
+                pointerEvents: 'none',
               }}
             />
             {/* Department badge */}
@@ -156,7 +163,7 @@ export default function FeaturedCard({ member, onClick, index }: Props) {
                   letterSpacing: '0.01em',
                 }}
               >
-                {member.name}
+                {displayText}
               </h3>
               <p
                 style={{

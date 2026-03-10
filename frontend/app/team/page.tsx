@@ -12,7 +12,6 @@ import TeamStats from '@/components/TeamStats';
 import DepartmentFilter from '@/components/DepartmentFilter';
 import TeamGrid from '@/components/TeamGrid';
 import TeamMemberModal from '@/components/TeamMemberModal';
-import MarqueeTicker from '@/components/MarqueeTicker';
 import BootSequence from '@/components/BootSequence';
 
 function ScrollProgressBar() {
@@ -81,7 +80,7 @@ export default function TeamPage() {
       <Navbar />
 
       <div className="relative z-10">
-        <HeroSection memberCount={stats?.total} />
+        <HeroSection memberCount={stats?.total} stats={stats} />
         <TeamStats stats={stats} />
         <DepartmentFilter
           active={department}
@@ -90,10 +89,6 @@ export default function TeamPage() {
           search={search}
           onSearch={setSearch}
         />
-
-        <div style={{ maxWidth: '72rem', margin: '0 auto', padding: '0 1.5rem' }}>
-          <MarqueeTicker totalMembers={stats?.total} />
-        </div>
 
         {error ? (
           <div className="max-w-6xl mx-auto px-6 py-24 text-center">

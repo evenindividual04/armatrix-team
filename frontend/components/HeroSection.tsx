@@ -1,12 +1,15 @@
 'use client';
 import { motion } from 'framer-motion';
 import ArmSchematic from './ArmSchematic';
+import DeptArc from './DeptArc';
+import type { StatsResponse } from '@/types';
 
 interface Props {
   memberCount?: number;
+  stats?: StatsResponse | null;
 }
 
-export default function HeroSection({ memberCount }: Props) {
+export default function HeroSection({ memberCount, stats }: Props) {
   return (
     <section className="scanlines relative pt-32 pb-10">
       {/* Ghost background number */}
@@ -134,10 +137,15 @@ export default function HeroSection({ memberCount }: Props) {
           </motion.p>
         </div>
 
-        {/* Right: arm schematic */}
-        <div className="hero-schematic">
-          <ArmSchematic />
-        </div>
+        {/* Right: department arc chart */}
+        <motion.div
+          className="hero-schematic"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+        >
+          <DeptArc stats={stats ?? null} />
+        </motion.div>
 
       </div>
     </section>

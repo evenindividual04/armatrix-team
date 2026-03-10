@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import Image from 'next/image';
 import { Linkedin, Twitter, Mail } from 'lucide-react';
 import { useState } from 'react';
+import { useTextScramble } from '@/hooks/useTextScramble';
 import type { TeamMember } from '@/types';
 import SpotlightCard from './SpotlightCard';
 import AvatarFallback from './AvatarFallback';
@@ -28,6 +29,7 @@ const CARD_HOVER = {
 
 export default function WideCard({ member, onClick, index }: Props) {
   const [imgError, setImgError] = useState(false);
+  const { displayText, scramble, reset } = useTextScramble(member.name);
 
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
@@ -40,11 +42,6 @@ export default function WideCard({ member, onClick, index }: Props) {
     mouseY.set((e.clientY - rect.top) / rect.height);
   };
 
-  const handleMouseLeave = () => {
-    mouseX.set(0.5);
-    mouseY.set(0.5);
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -52,14 +49,15 @@ export default function WideCard({ member, onClick, index }: Props) {
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.06 }}
       style={{
-        gridColumn: 'span 2',
+        height: '100%',
         rotateX,
         rotateY,
         transformStyle: 'preserve-3d',
         transformPerspective: 800,
       }}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={scramble}
+      onMouseLeave={() => { mouseX.set(0.5); mouseY.set(0.5); reset(); }}
     >
       <SpotlightCard
         className="card-hover-group h-full cursor-pointer"
@@ -88,7 +86,7 @@ export default function WideCard({ member, onClick, index }: Props) {
           </div>
 
           {/* Photo */}
-          <div className="scanlines wide-card-photo">
+          <div className="scanlines wide-card-photo" style={{ position: 'relative' }}>
             {!imgError ? (
               <Image
                 src={member.photo_url}
@@ -102,6 +100,8 @@ export default function WideCard({ member, onClick, index }: Props) {
             ) : (
               <AvatarFallback name={member.name} className="w-full h-full" />
             )}
+            {/* Dark overlay to blend light avatar backgrounds into the dark card */}
+            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.28)', zIndex: 1, pointerEvents: 'none' }} />
           </div>
 
           {/* Info */}
@@ -129,7 +129,7 @@ export default function WideCard({ member, onClick, index }: Props) {
                   letterSpacing: '0.01em',
                 }}
               >
-                {member.name}
+                {displayText}
               </h3>
               <p
                 style={{
@@ -158,19 +158,37 @@ export default function WideCard({ member, onClick, index }: Props) {
                 {member.bio}
               </p>
             </div>
-            <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 16 }}>
               {member.linkedin_url && (
                 <a
                   href={member.linkedin_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  style={{ padding: 8, color: '#4A4F4A', textDecoration: 'none', transition: 'color 0.2s' }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#FF9500')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = '#4A4F4A')}
-                  aria-label="LinkedIn"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '6px 12px',
+                    fontSize: '0.625rem',
+                    fontFamily: 'var(--font-mono)',
+                    letterSpacing: '0.08em',
+                    color: '#7A8078',
+                    border: '1px solid #1C1F1C',
+                    background: 'transparent',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s, border-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = '#FF9500';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,149,0,0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = '#7A8078';
+                    (e.currentTarget as HTMLElement).style.borderColor = '#1C1F1C';
+                  }}
                 >
-                  <Linkedin size={14} />
+                  <Linkedin size={11} /> LINKEDIN
                 </a>
               )}
               {member.twitter_url && (
@@ -179,24 +197,60 @@ export default function WideCard({ member, onClick, index }: Props) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  style={{ padding: 8, color: '#4A4F4A', textDecoration: 'none', transition: 'color 0.2s' }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#FF9500')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = '#4A4F4A')}
-                  aria-label="Twitter"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '6px 12px',
+                    fontSize: '0.625rem',
+                    fontFamily: 'var(--font-mono)',
+                    letterSpacing: '0.08em',
+                    color: '#7A8078',
+                    border: '1px solid #1C1F1C',
+                    background: 'transparent',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s, border-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = '#FF9500';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,149,0,0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = '#7A8078';
+                    (e.currentTarget as HTMLElement).style.borderColor = '#1C1F1C';
+                  }}
                 >
-                  <Twitter size={14} />
+                  <Twitter size={11} /> TWITTER
                 </a>
               )}
               {member.email && (
                 <a
                   href={`mailto:${member.email}`}
                   onClick={(e) => e.stopPropagation()}
-                  style={{ padding: 8, color: '#4A4F4A', textDecoration: 'none', transition: 'color 0.2s' }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.color = '#FF9500')}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLElement).style.color = '#4A4F4A')}
-                  aria-label="Email"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '6px 12px',
+                    fontSize: '0.625rem',
+                    fontFamily: 'var(--font-mono)',
+                    letterSpacing: '0.08em',
+                    color: '#7A8078',
+                    border: '1px solid #1C1F1C',
+                    background: 'transparent',
+                    textDecoration: 'none',
+                    transition: 'color 0.2s, border-color 0.2s',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = '#FF9500';
+                    (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,149,0,0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color = '#7A8078';
+                    (e.currentTarget as HTMLElement).style.borderColor = '#1C1F1C';
+                  }}
                 >
-                  <Mail size={14} />
+                  <Mail size={11} /> EMAIL
                 </a>
               )}
             </div>
