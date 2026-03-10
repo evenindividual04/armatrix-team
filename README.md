@@ -2,7 +2,7 @@
 
 A full-stack team directory for Armatrix — a deep-tech robotics startup building snake-like robotic arms for confined hazardous environments.
 
-- **Frontend:** `https://YOUR_APP.vercel.app`
+- **Frontend:** `https://armatrix-team.vercel.app`
 - **Backend:** `https://armatrix-team.onrender.com`
 
 ---
