@@ -1,9 +1,9 @@
 # Armatrix Team Page
 
-A full-stack team directory for Armatrix — a deep-tech robotics startup building snake-like robotic arms for confined hazardous environments.
+A team directory for Armatrix. FastAPI backend, Next.js frontend, deployed on Render + Vercel.
 
-- **Frontend:** `https://armatrix-team.vercel.app`
-- **Backend:** `https://armatrix-team.onrender.com`
+- **Frontend:** https://armatrix-team.vercel.app
+- **Backend:** https://armatrix-team.onrender.com
 
 ---
 
@@ -31,7 +31,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-API at `http://localhost:8000` — interactive docs at `http://localhost:8000/docs`
+API at `http://localhost:8000` — docs at `http://localhost:8000/docs`
 
 Optional `backend/.env`:
 ```
@@ -50,12 +50,11 @@ npm run dev
 
 App at `http://localhost:3000`
 
-To point at a deployed backend:
+To point at a remote backend, either prefix the dev command:
 ```bash
 NEXT_PUBLIC_API_URL=https://armatrix-team.onrender.com npm run dev
 ```
-
-Or create `frontend/.env.local`:
+or create `frontend/.env.local`:
 ```
 NEXT_PUBLIC_API_URL=https://armatrix-team.onrender.com
 ```
@@ -87,37 +86,29 @@ Valid `card_size` values: `featured`, `wide`, `standard`
 
 ---
 
-## Design
+## Design decisions
 
-### Visual direction — "Operational Dossier"
-Near-black background (`#080A08`) with amber (`#FF9500`) as the sole accent. Amber reads as alert/precision — fitting for equipment built for hazardous environments. Typography: Barlow Condensed 800 for display, JetBrains Mono for UI chrome, Barlow for body copy.
+I didn't want this to look like a standard corporate team page — clean grid, headshots, LinkedIn icons, done. Armatrix builds robots for confined hazardous environments, so I went with something that feels closer to an industrial HUD or a military briefing document. Dark background (`#080A08`), amber (`#FF9500`) as the only accent colour, monospace type for all UI labels.
 
-### Bento grid
-Three card sizes — `featured` (2×2), `wide` (2×1), `standard` (1×1) — communicate hierarchy visually. CSS `grid-auto-flow: dense` keeps the layout gap-free.
+**The grid** uses three card sizes — `featured` (2×2), `wide` (2×1), `standard` (1×1) — so the layout itself communicates who the key people are without needing to say it. `grid-auto-flow: dense` keeps it packed without gaps.
 
-### Interactions
-- **Boot sequence** — terminal-style animation on first visit per session (`sessionStorage`)
-- **3D tilt** — cards respond to mouse position with spring-physics perspective tilt
-- **Text scramble** — hovering any card scrambles the name briefly before resolving, giving a data-retrieval feel
-- **Grayscale reveal** — photos start desaturated, reveal colour on hover
-- **Department arc chart** — animated SVG donut in the hero shows department breakdown, drawn live from the API
-- **Marquee ticker** — scrolling info strip between filter and grid
+**The hero** has an animated SVG donut chart that pulls department breakdown from the API on load. It's the only real data visualisation on the page and it earns its place — shows the team composition at a glance before you've scrolled anywhere.
 
-### Modal
-Clicking any card opens a full-detail modal with bio, social links, and full-colour photo. Dismisses on backdrop click or Escape.
+**Interactions** — a few things I thought were worth doing properly:
+- Text scramble on card hover (names cycle through random characters before resolving — gives a data-retrieval feel)
+- Grayscale photos that reveal colour on hover, so the grid looks calm at rest
+- 3D perspective tilt following the mouse, done with Framer Motion spring physics
+- A terminal-style boot sequence that plays once per session and doesn't repeat (stored in `sessionStorage`)
 
-### Department filter
-Client-side filtering with an animated amber underline indicator (`layoutId`). Counts update reactively.
+**The modal** opens on any card click and shows the full member detail — bio, social links, full-colour photo. Closes on backdrop click or Escape.
 
-### Admin panel (`/admin`)
-No auth — as specified. Full CRUD via the REST API. Validates required fields before submitting.
+**Admin panel** at `/admin` — no auth as specified. Full CRUD, form validates required fields before submitting.
 
-### Data
-10 fictional team members seeded on first backend startup. Seed only runs on an empty database.
+**Data** — 10 fictional team members are seeded on first backend startup. The seed checks whether the database is empty first, so restarting the server doesn't create duplicates.
 
 ---
 
-## Project Structure
+## Project structure
 
 ```
 armatrix-task/
