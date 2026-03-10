@@ -8,7 +8,6 @@ import Footer from '@/components/Footer';
 import NoiseOverlay from '@/components/NoiseOverlay';
 import GridBackground from '@/components/GridBackground';
 import HeroSection from '@/components/HeroSection';
-import TeamStats from '@/components/TeamStats';
 import DepartmentFilter from '@/components/DepartmentFilter';
 import TeamGrid from '@/components/TeamGrid';
 import TeamMemberModal from '@/components/TeamMemberModal';
@@ -81,7 +80,6 @@ export default function TeamPage() {
 
       <div className="relative z-10">
         <HeroSection memberCount={stats?.total} stats={stats} />
-        <TeamStats stats={stats} />
         <DepartmentFilter
           active={department}
           counts={departmentCounts}
